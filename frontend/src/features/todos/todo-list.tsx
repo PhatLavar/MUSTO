@@ -1,15 +1,15 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { createTodo, getTodos } from "@/lib/api";
 import { TodoForm } from "./todo-form";
 import { TodoItem } from "./todo-item";
 import { TodoProgress } from "./todo-progress";
 import type { Todo } from "./todo-types";
 
 export function TodoList() {
-  const [todos, setTodos] = useState<Todo[]>([
-    { id: "1", title: "Design dashboard layout", isCompleted: true },
-    { id: "2", title: "Create todo feature", isCompleted: false },
-    { id: "3", title: "Connect backend API", isCompleted: false },
-  ]);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  useEffect(() => {
+    getTodos().then(setTodos);
+  }, []);
 
   const [title, setTitle] = useState("");
 
@@ -20,15 +20,9 @@ export function TodoList() {
     return Math.round((completedCount / todos.length) * 100);
   }, [completedCount, todos.length]);
 
-  function handleAddTodo() {
+  async function handleAddTodo() {
     if (!title.trim()) return;
-
-    const newTodo: Todo = {
-      id: crypto.randomUUID(),
-      title: title.trim(),
-      isCompleted: false,
-    };
-
+    const newTodo = await createTodo(title.trim());
     setTodos((currentTodos) => [newTodo, ...currentTodos]);
     setTitle("");
   }
