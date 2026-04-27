@@ -4,14 +4,20 @@ type Todo = {
   isCompleted: boolean;
 };
 
-let todos: Todo[] = [
-  { id: "1", title: "Design dashboard layout", isCompleted: true },
-  { id: "2", title: "Create todo API", isCompleted: false },
-];
+declare global {
+  var todos: Todo[] | undefined;
+}
+
+if (!globalThis.todos) {
+  globalThis.todos = [
+    { id: "1", title: "Design dashboard layout", isCompleted: true },
+    { id: "2", title: "Create todo API", isCompleted: false },
+  ];
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
@@ -23,7 +29,7 @@ export async function OPTIONS() {
 }
 
 export async function GET() {
-  return Response.json(todos, {
+  return Response.json(globalThis.todos!, {
     headers: corsHeaders,
   });
 }
@@ -44,7 +50,7 @@ export async function POST(req: Request) {
     isCompleted: false,
   };
 
-  todos.unshift(newTodo);
+  globalThis.todos!.unshift(newTodo);
 
   return Response.json(newTodo, {
     status: 201,

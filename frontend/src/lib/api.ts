@@ -33,3 +33,31 @@ export async function createTodo(title: string) {
 
   return res.json();
 }
+
+export async function updateTodo(id: string, isCompleted: boolean) {
+  const res = await fetch(`http://localhost:3000/api/todos/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ isCompleted }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to update todo");
+  }
+
+  return res.json();
+}
+
+export async function deleteTodo(id: string) {
+  const res = await fetch(`http://localhost:3000/api/todos/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to delete todo");
+  }
+
+  return res.json();
+}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { createTodo, getTodos } from "@/lib/api";
+import { createTodo, deleteTodo, getTodos, updateTodo } from "@/lib/api";
 import { TodoForm } from "./todo-form";
 import { TodoItem } from "./todo-item";
 import { TodoProgress } from "./todo-progress";
@@ -27,15 +27,20 @@ export function TodoList() {
     setTitle("");
   }
 
-  function handleToggleTodo(id: string) {
+  async function handleToggleTodo(id: string) {
+    const todo = todos.find((todo) => todo.id === id);
+    if (!todo) return;
+
+    const updatedTodo = await updateTodo(id, !todo.isCompleted);
+
     setTodos((currentTodos) =>
-      currentTodos.map((todo) =>
-        todo.id === id ? { ...todo, isCompleted: !todo.isCompleted } : todo
-      )
+      currentTodos.map((todo) => (todo.id === id ? updatedTodo : todo))
     );
   }
 
-  function handleDeleteTodo(id: string) {
+  async function handleDeleteTodo(id: string) {
+    await deleteTodo(id);
+
     setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id));
   }
 
