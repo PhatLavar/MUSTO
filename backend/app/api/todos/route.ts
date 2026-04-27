@@ -1,19 +1,4 @@
-type Todo = {
-  id: string;
-  title: string;
-  isCompleted: boolean;
-};
-
-declare global {
-  var todos: Todo[] | undefined;
-}
-
-if (!globalThis.todos) {
-  globalThis.todos = [
-    { id: "1", title: "Design dashboard layout", isCompleted: true },
-    { id: "2", title: "Create todo API", isCompleted: false },
-  ];
-}
+import { supabase } from "@/lib/supabase";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -29,7 +14,19 @@ export async function OPTIONS() {
 }
 
 export async function GET() {
-  return Response.json(globalThis.todos!, {
+  const { data, error } = await supabase
+    .from("todos")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return Response.json(
+      { message: error.message },
+      { status: 500, headers: corsHeaders }
+    );
+  }
+
+  return Response.json(data, {
     headers: corsHeaders,
   });
 }
@@ -44,15 +41,23 @@ export async function POST(req: Request) {
     );
   }
 
-  const newTodo: Todo = {
-    id: crypto.randomUUID(),
-    title: body.title,
-    isCompleted: false,
-  };
+  const { data, error } = await supabase
+    .from("todos")
+    .insert({
+      title: body.title,
+      is_completed: false,
+    })
+    .select()
+    .single();
 
-  globalThis.todos!.unshift(newTodo);
+  if (error) {
+    return Response.json(
+      { message: error.message },
+      { status: 500, headers: corsHeaders }
+    );
+  }
 
-  return Response.json(newTodo, {
+  return Response.json(data, {
     status: 201,
     headers: corsHeaders,
   });

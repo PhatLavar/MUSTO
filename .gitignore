@@ -16,6 +16,7 @@ dist/
 # ------------- ENVIRONMENT VARIABLES --------------
 # ==================================================
 .env
+backend/.env.local
 .env.*
 !.env.example
 

@@ -1,19 +1,4 @@
-type Todo = {
-  id: string;
-  title: string;
-  isCompleted: boolean;
-};
-
-declare global {
-  var todos: Todo[] | undefined;
-}
-
-if (!globalThis.todos) {
-  globalThis.todos = [
-    { id: "1", title: "Design dashboard layout", isCompleted: true },
-    { id: "2", title: "Create todo API", isCompleted: false },
-  ];
-}
+import { supabase } from "@/lib/supabase";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -35,22 +20,23 @@ export async function PATCH(
   const { id } = await params;
   const body = await req.json();
 
-  const todos = globalThis.todos!;
-  const todoIndex = todos.findIndex((todo) => todo.id === id);
+  const { data, error } = await supabase
+    .from("todos")
+    .update({
+      is_completed: body.is_completed,
+    })
+    .eq("id", id)
+    .select()
+    .single();
 
-  if (todoIndex === -1) {
+  if (error) {
     return Response.json(
-      { message: "Todo not found" },
-      { status: 404, headers: corsHeaders }
+      { message: error.message },
+      { status: 500, headers: corsHeaders }
     );
   }
 
-  todos[todoIndex] = {
-    ...todos[todoIndex],
-    isCompleted: body.isCompleted,
-  };
-
-  return Response.json(todos[todoIndex], {
+  return Response.json(data, {
     headers: corsHeaders,
   });
 }
@@ -60,20 +46,22 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const todos = globalThis.todos!;
-  const todoIndex = todos.findIndex((todo) => todo.id === id);
 
-  if (todoIndex === -1) {
+  const { data, error } = await supabase
+    .from("todos")
+    .delete()
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) {
     return Response.json(
-      { message: "Todo not found" },
-      { status: 404, headers: corsHeaders }
+      { message: error.message },
+      { status: 500, headers: corsHeaders }
     );
   }
 
-  const deletedTodo = todos[todoIndex];
-  todos.splice(todoIndex, 1);
-
-  return Response.json(deletedTodo, {
+  return Response.json(data, {
     headers: corsHeaders,
   });
 }
