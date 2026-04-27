@@ -8,10 +8,14 @@ import type { Todo } from "./todo-types";
 export function TodoList() {
   const [todos, setTodos] = useState<Todo[]>([]);
   useEffect(() => {
-    getTodos().then(setTodos);
+    refetchTodos();
   }, []);
 
   const [title, setTitle] = useState("");
+  async function refetchTodos() {
+    const newTodos = await getTodos();
+    setTodos(newTodos);
+  }
 
   const completedCount = todos.filter((todo) => todo.isCompleted).length;
 
@@ -22,26 +26,21 @@ export function TodoList() {
 
   async function handleAddTodo() {
     if (!title.trim()) return;
-    const newTodo = await createTodo(title.trim());
-    setTodos((currentTodos) => [newTodo, ...currentTodos]);
+    await createTodo(title.trim());
+    await refetchTodos();
     setTitle("");
   }
 
   async function handleToggleTodo(id: string) {
     const todo = todos.find((todo) => todo.id === id);
     if (!todo) return;
-
-    const updatedTodo = await updateTodo(id, !todo.isCompleted);
-
-    setTodos((currentTodos) =>
-      currentTodos.map((todo) => (todo.id === id ? updatedTodo : todo))
-    );
+    await updateTodo(id, !todo.isCompleted);
+    await refetchTodos();
   }
 
   async function handleDeleteTodo(id: string) {
     await deleteTodo(id);
-
-    setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id));
+    await refetchTodos();
   }
 
   return (
