@@ -20,7 +20,7 @@ export function TodoItem({
       >
         <span
           className={`flex h-5 w-5 items-center justify-center rounded-full border ${
-            todo.isCompleted
+            todo.is_completed
               ? "border-emerald-400 bg-emerald-400"
               : "border-slate-600"
           }`}
@@ -28,7 +28,7 @@ export function TodoItem({
 
         <span
           className={
-            todo.isCompleted ? "text-slate-500 line-through" : "text-white"
+            todo.is_completed ? "text-slate-500 line-through" : "text-white"
           }
         >
           {todo.title}

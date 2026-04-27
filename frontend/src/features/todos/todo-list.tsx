@@ -17,7 +17,7 @@ export function TodoList() {
     setTodos(newTodos);
   }
 
-  const completedCount = todos.filter((todo) => todo.isCompleted).length;
+  const completedCount = todos.filter((todo) => todo.is_completed).length;
 
   const progress = useMemo(() => {
     if (todos.length === 0) return 0;
@@ -34,7 +34,7 @@ export function TodoList() {
   async function handleToggleTodo(id: string) {
     const todo = todos.find((todo) => todo.id === id);
     if (!todo) return;
-    await updateTodo(id, !todo.isCompleted);
+    await updateTodo(id, !todo.is_completed);
     await refetchTodos();
   }
 
