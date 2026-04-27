@@ -1,7 +1,7 @@
-import { TodoPage } from "@/pages/todo-page";
+import { NotesPage } from "@/pages/note-page";
 
 function App() {
-  return <TodoPage />;
+  return <NotesPage />;
 }
 
 export default App;
