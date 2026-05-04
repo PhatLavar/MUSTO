@@ -118,12 +118,15 @@ export function NoteList() {
                 </p>
 
                 {(note.note_files ?? []).map((file) => (
-                  <div
+                  <a
                     key={file.id}
-                    className="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300"
+                    href={`https://jlmjqoosmtdhxhenyihs.supabase.co/storage/v1/object/public/note-files/${file.file_path}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800"
                   >
                     {file.file_name}
-                  </div>
+                  </a>
                 ))}
               </div>
             )}
