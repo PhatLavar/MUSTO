@@ -1,14 +1,17 @@
 export type NoteFile = {
   id: string;
-  name: string;
-  size: number;
-  type: string;
+  note_id: string;
+  file_name: string;
+  file_path: string;
+  file_type?: string;
+  file_size?: number;
+  created_at?: string;
 };
 
 export type Note = {
   id: string;
   title: string;
-  content: string;
-  files: NoteFile[];
+  content: string | null;
   created_at?: string;
+  note_files?: NoteFile[];
 };

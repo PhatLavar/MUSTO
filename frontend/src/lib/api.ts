@@ -61,3 +61,29 @@ export async function deleteTodo(id: string) {
 
   return res.json();
 }
+
+export async function getNotes() {
+  const res = await fetch("http://localhost:3000/api/notes");
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch notes");
+  }
+
+  return res.json();
+}
+
+export async function createNote(title: string, content: string) {
+  const res = await fetch("http://localhost:3000/api/notes", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ title, content }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to create note");
+  }
+
+  return res.json();
+}

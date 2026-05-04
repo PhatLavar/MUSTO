@@ -1,32 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createNote, getNotes } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import type { Note } from "./note-types";
 
 export function NoteList() {
   const [notes, setNotes] = useState<Note[]>([]);
+  useEffect(() => {
+    refetchNotes();
+  }, []);
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [files, setFiles] = useState<File[]>([]);
 
-  function handleAddNote() {
+  async function handleAddNote() {
     if (!title.trim()) return;
 
-    const newNote: Note = {
-      id: crypto.randomUUID(),
-      title: title.trim(),
-      content: content.trim(),
-      files: files.map((file) => ({
-        id: crypto.randomUUID(),
-        name: file.name,
-        size: file.size,
-        type: file.type || "unknown",
-      })),
-    };
+    await createNote(title.trim(), content.trim());
+    await refetchNotes();
 
-    setNotes((currentNotes) => [newNote, ...currentNotes]);
     setTitle("");
     setContent("");
     setFiles([]);
+  }
+
+  async function refetchNotes() {
+    const newNotes = await getNotes();
+    setNotes(newNotes);
   }
 
   return (
@@ -98,18 +98,18 @@ export function NoteList() {
               {note.content || "No content"}
             </p>
 
-            {note.files.length > 0 && (
+            {(note.note_files ?? []).length > 0 && (
               <div className="mt-4 space-y-2">
                 <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
                   Attachments
                 </p>
 
-                {note.files.map((file) => (
+                {(note.note_files ?? []).map((file) => (
                   <div
                     key={file.id}
                     className="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300"
                   >
-                    {file.name}
+                    {file.file_name}
                   </div>
                 ))}
               </div>
