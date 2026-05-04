@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createNote, getNotes } from "@/lib/api";
+import { createNote, getNotes, createNoteFile, uploadFile } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import type { Note } from "./note-types";
 
@@ -16,13 +16,26 @@ export function NoteList() {
   async function handleAddNote() {
     if (!title.trim()) return;
 
-    await createNote(title.trim(), content.trim());
-    await refetchNotes();
+    const createdNote = await createNote(title.trim(), content.trim());
 
-    setTitle("");
-    setContent("");
-    setFiles([]);
-  }
+    for (const file of files) {
+      const uploadedFile = await uploadFile(file);
+
+      await createNoteFile({
+        note_id: createdNote.id,
+        file_name: uploadedFile.file_name,
+        file_path: uploadedFile.file_path,
+        file_type: uploadedFile.file_type,
+        file_size: uploadedFile.file_size,
+      });
+    }
+
+  await refetchNotes();
+
+  setTitle("");
+  setContent("");
+  setFiles([]);
+}
 
   async function refetchNotes() {
     const newNotes = await getNotes();
