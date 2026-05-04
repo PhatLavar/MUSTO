@@ -1,45 +1,20 @@
-import { useEffect, useState } from "react";
-import { createNote, getNotes, createNoteFile, uploadFile } from "@/lib/api";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import type { Note } from "./note-types";
+import { useNotes } from "./use-notes";
 
 export function NoteList() {
-  const [notes, setNotes] = useState<Note[]>([]);
-  useEffect(() => {
-    refetchNotes();
-  }, []);
-
+  const {notes, isLoading, error, addNote } = useNotes();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [files, setFiles] = useState<File[]>([]);
 
+
   async function handleAddNote() {
-    if (!title.trim()) return;
+    await addNote(title.trim(), content.trim(), files);
 
-    const createdNote = await createNote(title.trim(), content.trim());
-
-    for (const file of files) {
-      const uploadedFile = await uploadFile(file);
-
-      await createNoteFile({
-        note_id: createdNote.id,
-        file_name: uploadedFile.file_name,
-        file_path: uploadedFile.file_path,
-        file_type: uploadedFile.file_type,
-        file_size: uploadedFile.file_size,
-      });
-    }
-
-  await refetchNotes();
-
-  setTitle("");
-  setContent("");
-  setFiles([]);
-}
-
-  async function refetchNotes() {
-    const newNotes = await getNotes();
-    setNotes(newNotes);
+    setTitle("");
+    setContent("");
+    setFiles([]);
   }
 
   return (
@@ -95,43 +70,60 @@ export function NoteList() {
         )}
 
         <div className="mt-4 flex justify-end">
-          <Button onClick={handleAddNote}>Add Note</Button>
+          <Button 
+            onClick={handleAddNote} 
+            disabled={isLoading}
+          > 
+            {isLoading ? "Adding..." : "Add Note"}
+          </Button>
         </div>
+
+        {error && (
+          <div className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-400">
+            {error}
+          </div>
+        )}
       </section>
 
       <section className="mt-6 grid gap-4 md:grid-cols-2">
-        {notes.map((note) => (
-          <article
-            key={note.id}
-            className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5"
-          >
-            <h2 className="text-lg font-semibold">{note.title}</h2>
+        {notes.length === 0 ? (
+          <div className="col-span-full rounded-2xl border border-slate-800 bg-slate-900/60 p-6 text-center text-slate-400">
+            No notes yet. Create your first note ✨
+          </div>
+        ) : (
+          notes.map((note) => (
+            <article
+              key={note.id}
+              className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5"
+            >
+              <h2 className="text-lg font-semibold">{note.title}</h2>
 
-            <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-400">
-              {note.content || "No content"}
-            </p>
+              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-400">
+                {note.content || "No content"}
+              </p>
 
-            {(note.note_files ?? []).length > 0 && (
-              <div className="mt-4 space-y-2">
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                  Attachments
-                </p>
+              {(note.note_files ?? []).length > 0 && (
+                <div className="mt-4 space-y-2">
+                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                    Attachments
+                  </p>
 
-                {(note.note_files ?? []).map((file) => (
-                  <a
-                    key={file.id}
-                    href={`https://jlmjqoosmtdhxhenyihs.supabase.co/storage/v1/object/public/note-files/${file.file_path}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="block rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800"
-                  >
-                    {file.file_name}
-                  </a>
-                ))}
-              </div>
-            )}
-          </article>
-        ))}
+                  {(note.note_files ?? []).map((file) => (
+                    <a
+                      key={file.id}
+                      href={`https://jlmjqoosmtdhxhenyihs.supabase.co/storage/v1/object/public/note-files/${file.file_path}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800"
+                    >
+                      {file.file_name}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </article>
+          ))
+        )}
       </section>
     </div>
   );
