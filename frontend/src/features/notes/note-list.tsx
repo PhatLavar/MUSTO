@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useNotes } from "./use-notes";
 
 export function NoteList() {
-  const {notes, isLoading, error, addNote } = useNotes();
+  const {notes, isLoading, error, addNote, removeNote } = useNotes();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [files, setFiles] = useState<File[]>([]);
@@ -96,7 +96,19 @@ export function NoteList() {
               key={note.id}
               className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5"
             >
-              <h2 className="text-lg font-semibold">{note.title}</h2>
+              <div className="flex items-start justify-between gap-4">
+                <h2 className="text-lg font-semibold">{note.title}</h2>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => removeNote(note.id)}
+                  disabled={isLoading}
+                  className="text-slate-400 hover:text-white"
+                >
+                  Delete
+                </Button>
+              </div>
 
               <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-400">
                 {note.content || "No content"}

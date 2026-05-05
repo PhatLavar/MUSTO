@@ -88,6 +88,18 @@ export async function createNote(title: string, content: string) {
   return res.json();
 }
 
+export async function deleteNote(id: string) {
+  const res = await fetch(`http://localhost:3000/api/notes/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to delete note");
+  }
+
+  return res.json();
+}
+
 export async function uploadFile(file: File) {
   const formData = new FormData();
   formData.append("file", file);
