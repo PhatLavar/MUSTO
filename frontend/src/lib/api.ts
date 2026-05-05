@@ -1,5 +1,7 @@
+const API_BASE_URL = "http://localhost:3000";
+
 export async function getHealth() {
-  const res = await fetch("http://localhost:3000/api/health");
+  const res = await fetch(`${API_BASE_URL}/api/health`);
 
   if (!res.ok) {
     throw new Error("Failed to fetch!");
@@ -9,8 +11,8 @@ export async function getHealth() {
 }
 
 export async function getTodos() {
-  const res = await fetch("http://localhost:3000/api/todos");
-
+  const res = await fetch(`${API_BASE_URL}/api/todos`);
+  
   if (!res.ok) {
     throw new Error("Failed to fetch todos");
   }
@@ -19,7 +21,7 @@ export async function getTodos() {
 }
 
 export async function createTodo(title: string) {
-  const res = await fetch("http://localhost:3000/api/todos", {
+  const res = await fetch(`${API_BASE_URL}/api/todos`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -41,7 +43,7 @@ export async function updateTodo(
     is_completed?: boolean;
   }
 ) {
-  const res = await fetch(`http://localhost:3000/api/todos/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/todos/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -57,7 +59,7 @@ export async function updateTodo(
 }
 
 export async function deleteTodo(id: string) {
-  const res = await fetch(`http://localhost:3000/api/todos/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/todos/${id}`, {
     method: "DELETE",
   });
 
@@ -69,7 +71,7 @@ export async function deleteTodo(id: string) {
 }
 
 export async function getNotes() {
-  const res = await fetch("http://localhost:3000/api/notes");
+  const res = await fetch(`${API_BASE_URL}/api/notes`);
 
   if (!res.ok) {
     throw new Error("Failed to fetch notes");
@@ -79,7 +81,7 @@ export async function getNotes() {
 }
 
 export async function createNote(title: string, content: string) {
-  const res = await fetch("http://localhost:3000/api/notes", {
+  const res = await fetch(`${API_BASE_URL}/api/notes`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -101,7 +103,7 @@ export async function updateNote(
     content?: string;
   }
 ) {
-  const res = await fetch(`http://localhost:3000/api/notes/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/notes/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -117,7 +119,7 @@ export async function updateNote(
 }
 
 export async function deleteNote(id: string) {
-  const res = await fetch(`http://localhost:3000/api/notes/${id}`, {
+  const res = await fetch(`${API_BASE_URL}/api/notes/${id}`, {
     method: "DELETE",
   });
 
@@ -132,7 +134,7 @@ export async function uploadFile(file: File) {
   const formData = new FormData();
   formData.append("file", file);
 
-  const res = await fetch("http://localhost:3000/api/upload", {
+  const res = await fetch(`${API_BASE_URL}/api/upload`, {
     method: "POST",
     body: formData,
   });
@@ -151,7 +153,7 @@ export async function createNoteFile(input: {
   file_type?: string;
   file_size?: number;
 }) {
-  const res = await fetch("http://localhost:3000/api/note-files", {
+  const res = await fetch(`${API_BASE_URL}/api/note-files`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

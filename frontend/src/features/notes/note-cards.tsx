@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { Note } from "./note-types";
+import { getFileUrl } from "@/lib/storage";
 
 type NoteCardProps = {
   note: Note;
@@ -112,7 +113,7 @@ export function NoteCard({
               {(note.note_files ?? []).map((file) => (
                 <a
                   key={file.id}
-                  href={`https://jlmjqoosmtdhxhenyihs.supabase.co/storage/v1/object/public/note-files/${file.file_path}`}
+                  href={getFileUrl(file.file_path)}
                   target="_blank"
                   rel="noreferrer"
                   className="block rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800"
