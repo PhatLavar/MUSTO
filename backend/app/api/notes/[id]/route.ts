@@ -13,6 +13,52 @@ export async function OPTIONS() {
   });
 }
 
+export async function PATCH(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const body = await req.json();
+
+  const updateData: {
+    title?: string;
+    content?: string;
+  } = {};
+
+  if (typeof body.title === "string") {
+    updateData.title = body.title;
+  }
+
+  if (typeof body.content === "string") {
+    updateData.content = body.content;
+  }
+
+  const { data, error } = await supabase
+    .from("notes")
+    .update(updateData)
+    .eq("id", id)
+    .select()
+    .maybeSingle();
+
+  if (error) {
+    return Response.json(
+      { message: error.message },
+      { status: 500, headers: corsHeaders }
+    );
+  }
+
+  if (!data) {
+    return Response.json(
+      { message: "Note not found" },
+      { status: 404, headers: corsHeaders }
+    );
+  }
+
+  return Response.json(data, {
+    headers: corsHeaders,
+  });
+}
+
 export async function DELETE(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }

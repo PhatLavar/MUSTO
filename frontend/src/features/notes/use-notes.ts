@@ -4,7 +4,8 @@ import {
   createNoteFile,
   getNotes,
   uploadFile,
-  deleteNote
+  deleteNote,
+  updateNote
 } from "@/lib/api";
 import type { Note } from "./note-types";
 
@@ -56,6 +57,27 @@ export function useNotes() {
     }
   }
 
+  async function editNote(
+    id: string,
+    input: {
+      title: string;
+      content: string;
+    }
+  ) {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      await updateNote(id, input);
+      await refetchNotes();
+    } catch (err) {
+      console.error(err);
+      setError("Failed to update note");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   async function removeNote(id: string) {
     try {
       setIsLoading(true);
@@ -78,5 +100,6 @@ export function useNotes() {
     addNote,
     refetchNotes,
     removeNote,
+    editNote
   };
 }

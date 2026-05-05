@@ -94,6 +94,28 @@ export async function createNote(title: string, content: string) {
   return res.json();
 }
 
+export async function updateNote(
+  id: string,
+  input: {
+    title?: string;
+    content?: string;
+  }
+) {
+  const res = await fetch(`http://localhost:3000/api/notes/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(input),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to update note");
+  }
+
+  return res.json();
+}
+
 export async function deleteNote(id: string) {
   const res = await fetch(`http://localhost:3000/api/notes/${id}`, {
     method: "DELETE",

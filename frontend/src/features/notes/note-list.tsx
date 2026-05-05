@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNotes } from "./use-notes";
+import { NoteCard } from "./note-cards";
 
 export function NoteList() {
-  const {notes, isLoading, error, addNote, removeNote } = useNotes();
+  const { notes, isLoading, error, addNote, removeNote, editNote } = useNotes();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [files, setFiles] = useState<File[]>([]);
@@ -92,48 +93,13 @@ export function NoteList() {
           </div>
         ) : (
           notes.map((note) => (
-            <article
+            <NoteCard
               key={note.id}
-              className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <h2 className="text-lg font-semibold">{note.title}</h2>
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removeNote(note.id)}
-                  disabled={isLoading}
-                  className="text-slate-400 hover:text-white"
-                >
-                  Delete
-                </Button>
-              </div>
-
-              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-400">
-                {note.content || "No content"}
-              </p>
-
-              {(note.note_files ?? []).length > 0 && (
-                <div className="mt-4 space-y-2">
-                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                    Attachments
-                  </p>
-
-                  {(note.note_files ?? []).map((file) => (
-                    <a
-                      key={file.id}
-                      href={`https://jlmjqoosmtdhxhenyihs.supabase.co/storage/v1/object/public/note-files/${file.file_path}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="block rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800"
-                    >
-                      {file.file_name}
-                    </a>
-                  ))}
-                </div>
-              )}
-            </article>
+              note={note}
+              isLoading={isLoading}
+              onDeleteNote={removeNote}
+              onEditNote={editNote}
+            />
           ))
         )}
       </section>
