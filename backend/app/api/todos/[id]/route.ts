@@ -20,14 +20,25 @@ export async function PATCH(
   const { id } = await params;
   const body = await req.json();
 
+  const updateData: {
+    title?: string;
+    is_completed?: boolean;
+  } = {};
+
+  if (typeof body.title === "string") {
+    updateData.title = body.title;
+  }
+
+  if (typeof body.is_completed === "boolean") {
+    updateData.is_completed = body.is_completed;
+  }
+
   const { data, error } = await supabase
     .from("todos")
-    .update({
-      is_completed: body.is_completed,
-    })
+    .update(updateData)
     .eq("id", id)
     .select()
-    .single();
+    .maybeSingle();
 
   if (error) {
     return Response.json(

@@ -34,7 +34,12 @@ export function TodoList() {
   async function handleToggleTodo(id: string) {
     const todo = todos.find((todo) => todo.id === id);
     if (!todo) return;
-    await updateTodo(id, !todo.is_completed);
+    await updateTodo(id, { is_completed: !todo.is_completed });
+    await refetchTodos();
+  }
+
+  async function handleUpdateTodoTitle(id: string, title: string) {
+    await updateTodo(id, { title });
     await refetchTodos();
   }
 
@@ -71,6 +76,7 @@ export function TodoList() {
             todo={todo}
             onToggleTodo={handleToggleTodo}
             onDeleteTodo={handleDeleteTodo}
+            onUpdateTodoTitle={handleUpdateTodoTitle}
           />
         ))}
       </section>
