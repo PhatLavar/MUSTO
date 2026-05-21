@@ -111,6 +111,10 @@ Remove the `projects` property from `vercel.json`. Create separate Vercel projec
 
 Check the frontend project's `VITE_API_BASE_URL`. It must point to the deployed backend URL.
 
+### Frontend works until refresh, then shows 404
+
+The frontend uses browser routes like `/todo` and `/notes`. The `frontend/vercel.json` file rewrites all frontend paths to `index.html`, so React Router can load the right page. Redeploy the frontend after adding or changing that file.
+
 ### Backend cannot connect to Supabase
 
 Check the backend project's `SUPABASE_URL` and `SUPABASE_ANON_KEY` environment variables.

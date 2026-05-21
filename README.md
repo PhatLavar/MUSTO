@@ -320,6 +320,11 @@ VITE_API_BASE_URL=https://your-backend.vercel.app
 - ✅ Backend URL should not have trailing slash
 - ✅ Check if backend is running and accessible
 
+### Frontend works, but refresh gives 404
+- Keep `frontend/vercel.json` with the SPA rewrite
+- Redeploy the frontend project after pushing that file
+- This is needed for React Router routes like `/todo` and `/notes`
+
 ### Supabase connection errors
 - ✅ Verify `SUPABASE_URL` and `SUPABASE_ANON_KEY` are correct
 - ✅ Check that tables exist in your Supabase project

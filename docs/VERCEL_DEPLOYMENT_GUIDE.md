@@ -245,6 +245,23 @@ Fix:
 5. Set `VITE_API_BASE_URL` to the backend URL.
 6. Redeploy the frontend.
 
+### Frontend works, but refresh returns 404
+
+Cause: the frontend uses React Router with browser routes like `/todo` and `/notes`. On refresh, Vercel tries to find a real file at that path.
+
+Fix: keep `frontend/vercel.json` with this rewrite, then redeploy the frontend:
+
+```json
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+```
+
 ### Backend has Supabase errors
 
 Cause: Supabase environment variables are missing or wrong.

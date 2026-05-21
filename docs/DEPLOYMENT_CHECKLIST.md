@@ -7,6 +7,7 @@
 - [x] Backend and frontend are deployed as separate Vercel projects
 - [x] Backend Google font build dependency removed
 - [x] Frontend API URL uses `VITE_API_BASE_URL`
+- [x] Frontend Vercel rewrite handles refreshes on React Router routes
 - [x] Backend CORS headers configured in `backend/next.config.ts`
 - [x] `.env.example` files exist for setup reference
 
@@ -70,6 +71,7 @@
 | Problem | Fix |
 | --- | --- |
 | `additional property projects` | Remove `projects` from `vercel.json` |
+| Refresh on `/todo` or `/notes` gives 404 | Keep `frontend/vercel.json` rewrite and redeploy frontend |
 | Frontend fetch fails | Fix `VITE_API_BASE_URL` in the frontend Vercel project |
 | Backend Supabase errors | Fix `SUPABASE_URL` and `SUPABASE_ANON_KEY` in the backend Vercel project |
 | Upload errors | Check the Supabase `note-files` bucket and policies |

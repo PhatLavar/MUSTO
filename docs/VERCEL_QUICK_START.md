@@ -93,6 +93,7 @@ Common fixes:
 | Problem | Fix |
 | --- | --- |
 | Frontend cannot fetch data | Check `VITE_API_BASE_URL` in the frontend Vercel project |
+| Refreshing `/todo` or `/notes` gives 404 | Keep `frontend/vercel.json` rewrite and redeploy frontend |
 | Backend returns Supabase errors | Check `SUPABASE_URL` and `SUPABASE_ANON_KEY` in the backend Vercel project |
 | Vercel says `additional property projects` | Remove `projects` from `vercel.json` |
 | Local PowerShell blocks npm | Use `npm.cmd run build` |
