@@ -1,4 +1,4 @@
-# MUSTO - Todos & Notes Manager
+# [MUSTO](https://musto-frontend.vercel.app/) - Todos & Notes Manager
 
 A modern, full-stack application for managing todos and notes with real-time synchronization powered by Supabase.
 
