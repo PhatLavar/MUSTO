@@ -63,12 +63,19 @@ export async function DELETE(
     .delete()
     .eq("id", id)
     .select()
-    .single();
+    .maybeSingle();
 
   if (error) {
     return Response.json(
       { message: error.message },
       { status: 500, headers: corsHeaders }
+    );
+  }
+
+  if (!data) {
+    return Response.json(
+      { message: "Todo not found" },
+      { status: 404, headers: corsHeaders }
     );
   }
 
