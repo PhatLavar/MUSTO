@@ -1,44 +1,42 @@
-import type { AppPage } from "@/App";
+import { NavLink } from "react-router-dom";
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
-  currentPage: AppPage;
-  onNavigate: (page: AppPage) => void;
 };
 
-export function DashboardLayout({
-  children,
-  currentPage,
-  onNavigate,
-}: DashboardLayoutProps) {
+export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      <div className="mx-auto flex min-h-screen max-w-7xl border-x border-slate-800">
+      <div className="flex min-h-screen border-x border-slate-800">
         <aside className="w-64 shrink-0 border-r border-slate-800 p-8">
           <h1 className="mb-12 text-5xl font-bold tracking-tight">MUSTO</h1>
 
           <nav className="space-y-2">
-            <button
-              onClick={() => onNavigate("todo")}
-              className={`w-full rounded-xl px-4 py-3 text-left text-lg transition ${
-                currentPage === "todo"
-                  ? "bg-slate-800 text-white"
-                  : "text-slate-400 hover:bg-slate-900 hover:text-white"
-              }`}
+            <NavLink
+              to="/todo"
+              className={({ isActive }) =>
+                `block w-full rounded-xl px-4 py-3 text-left text-lg transition ${
+                  isActive
+                    ? "bg-slate-800 text-white"
+                    : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                }`
+              }
             >
               Todo
-            </button>
+            </NavLink>
 
-            <button
-              onClick={() => onNavigate("notes")}
-              className={`w-full rounded-xl px-4 py-3 text-left text-lg transition ${
-                currentPage === "notes"
-                  ? "bg-slate-800 text-white"
-                  : "text-slate-400 hover:bg-slate-900 hover:text-white"
-              }`}
+            <NavLink
+              to="/notes"
+              className={({ isActive }) =>
+                `block w-full rounded-xl px-4 py-3 text-left text-lg transition ${
+                  isActive
+                    ? "bg-slate-800 text-white"
+                    : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                }`
+              }
             >
               Notes
-            </button>
+            </NavLink>
           </nav>
         </aside>
 
