@@ -25,7 +25,7 @@
 - [x] Documentation index
 
 ### Configuration ✅
-- [x] vercel.json for monorepo deployment
+- [x] vercel.json uses valid Vercel schema only
 - [x] .env.example files created
 - [x] .env files in .gitignore
 - [x] next.config.ts optimized
@@ -131,8 +131,8 @@ MUSTO/ (Production Ready)
 ## 📋 Deployment Requirements Met
 
 ### Vercel Compatibility ✅
-- [x] Monorepo structure recognized
-- [x] vercel.json properly configured
+- [x] Backend and frontend deploy as separate Vercel projects
+- [x] vercel.json properly configured without `projects`
 - [x] Build commands verified
 - [x] Output directories correct
 - [x] Environment variables documented
@@ -151,7 +151,7 @@ MUSTO/ (Production Ready)
 - [x] Database connections optimized
 
 ### Scalability ✅
-- [x] Monorepo structure allows independent scaling
+- [x] Separate Vercel projects allow independent scaling
 - [x] Backend can scale independently
 - [x] Frontend can scale independently
 - [x] Database (Supabase) auto-scales
@@ -175,7 +175,7 @@ MUSTO/ (Production Ready)
 - [x] Quick references
 
 ### Configuration Ready ✅
-- [x] vercel.json configured
+- [x] vercel.json configured without unsupported fields
 - [x] .env.example files
 - [x] CORS headers set
 - [x] Next.js config optimized

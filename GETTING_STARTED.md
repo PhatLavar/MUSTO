@@ -96,7 +96,7 @@ git push origin main
    - Visit [vercel.com](https://vercel.com)
    - Click "Add New Project"
    - Select your GitHub repo
-   - Vercel auto-detects monorepo
+   - Create the backend and frontend as two separate Vercel projects
 
 3. **Deploy Backend**
    - Root directory: `backend`
@@ -155,8 +155,8 @@ MUSTO/
    - Connected to Supabase
 
 4. **`vercel.json`**
-   - Tells Vercel about your monorepo
-   - No editing needed!
+   - Contains only the valid Vercel schema reference
+   - Do not add a `projects` array here
 
 5. **`.env.local` (don't commit!)**
    - Keep secrets here

@@ -1,347 +1,282 @@
-# 🚀 Step-by-Step Vercel Deployment Guide
+# Step-by-Step Vercel Deployment Guide
 
-Complete instructions for deploying MUSTO to Vercel with zero configuration headaches.
+This project has two apps:
 
-## Table of Contents
-1. [Prerequisites](#prerequisites)
-2. [Prepare Your Project](#prepare-your-project)
-3. [Method 1: Vercel Dashboard (Easiest)](#method-1-vercel-dashboard-easiest)
-4. [Method 2: Vercel CLI](#method-2-vercel-cli)
-5. [Post-Deployment Verification](#post-deployment-verification)
-6. [Common Issues & Solutions](#common-issues--solutions)
+- `backend`: Next.js API routes
+- `frontend`: Vite React app
 
----
+You should deploy them as two separate Vercel projects from the same GitHub repository. Deploy the backend first, then use the backend URL when deploying the frontend.
+
+## Why Backend First?
+
+The frontend calls the backend through this environment variable:
+
+```text
+VITE_API_BASE_URL=https://your-backend-url.vercel.app
+```
+
+So the backend URL must exist before the frontend is deployed.
+
+## Important: Do Not Use `projects` in `vercel.json`
+
+Vercel does not support this:
+
+```json
+{
+  "projects": []
+}
+```
+
+If `vercel.json` contains `projects`, Vercel shows this error:
+
+```text
+Invalid request: should NOT have additional property `projects`.
+```
+
+Use the Vercel dashboard to create two projects instead.
 
 ## Prerequisites
 
-✅ **Required:**
-- GitHub account (push code here)
-- Vercel account (free at [vercel.com](https://vercel.com))
-- Supabase account (free at [supabase.com](https://supabase.com))
-- Node.js 18+ installed locally
+You need:
 
-✅ **Prepared:**
-- MUSTO project with all fixes applied
-- Supabase project with tables created
-- Backend and frontend `.env.example` files
+- GitHub account
+- Vercel account
+- Supabase account
+- Node.js installed locally
+- This repo pushed to GitHub
 
----
+Supabase should already have:
 
-## Prepare Your Project
+- `todos` table
+- `notes` table
+- `note_files` table
+- `note-files` storage bucket
 
-### Step 1: Verify Local Setup Works
+You also need these Supabase values:
 
-Before deploying, test everything locally:
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+
+Find them in Supabase:
+
+1. Open your Supabase project.
+2. Go to **Settings**.
+3. Go to **API**.
+4. Copy the Project URL and anon public key.
+
+## Local Build Check
+
+Run these before deploying:
 
 ```bash
-# Backend test
 cd backend
 npm install
-npm run build  # Should complete without errors
-npm run dev    # Should start without errors
+npm run build
 
-# In another terminal, test frontend
-cd frontend
+cd ../frontend
 npm install
-npm run build  # Should complete without errors
-npm run dev    # Should start without errors
+npm run build
 ```
 
-✅ Both should run without errors!
-
-### Step 2: Commit All Changes
+On Windows PowerShell, if `npm` is blocked by execution policy, use:
 
 ```bash
-cd MUSTO  # project root
-git add .
-git commit -m "Prepare for Vercel deployment - all checks passed"
-git push origin main
+npm.cmd run build
 ```
 
-### Step 3: Gather Required Information
+## Part 1: Deploy the Backend
 
-You'll need these values when deploying. Collect them now:
+1. Go to [vercel.com](https://vercel.com).
+2. Log in.
+3. Click **Add New Project**.
+4. Select your GitHub repository.
+5. Click **Import**.
 
-**From Supabase Dashboard:**
-1. Go to [supabase.com](https://supabase.com) → Your Project
-2. Click Settings → API
-3. Copy these values:
-   - `Project URL` → This is your `SUPABASE_URL`
-   - `anon (public)` key → This is your `SUPABASE_ANON_KEY`
+Configure the backend project:
 
-Save them in a secure location (not in code!).
+```text
+Project Name: musto-backend
+Root Directory: backend
+Framework Preset: Next.js
+Build Command: npm run build
+```
 
----
+Add environment variables:
 
-## Method 1: Vercel Dashboard (Easiest)
+```text
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-supabase-anon-key
+```
 
-### Step 1: Create Vercel Account & Login
+Then click **Deploy**.
 
-1. Go to [vercel.com](https://vercel.com)
-2. Sign up or log in with your GitHub account
-3. Click "Authorize Vercel"
+When deployment finishes, copy the backend URL. It will look like:
 
-### Step 2: Import Your Project
+```text
+https://musto-backend.vercel.app
+```
 
-1. Click **"Add New Project"** (or go to Dashboard → New Project)
-2. Under "Where's your code?", select **GitHub**
-3. Search for your MUSTO repository
-4. Click **"Import"**
+Test this URL in your browser:
 
-Vercel will auto-detect your monorepo and ask how to configure it.
+```text
+https://musto-backend.vercel.app/api/health
+```
 
-### Step 3: Configure Backend Project
+Expected result: a JSON response saying the backend is running.
 
-When prompted for project configuration:
+## Part 2: Deploy the Frontend
 
-1. **Project Name:** `musto-backend` (or any name you prefer)
-2. **Root Directory:** Select **`backend`** from dropdown
-3. **Build & Development Settings:**
-   - Build command: `npm run build`
-   - Output directory: `.next`
-4. **Environment Variables:**
-   - Click "Add"
-   - Name: `SUPABASE_URL`
-   - Value: Paste your Supabase URL from earlier
-   - Click "Add" again
-   - Name: `SUPABASE_ANON_KEY`
-   - Value: Paste your Supabase anon key
+1. Go back to the Vercel dashboard.
+2. Click **Add New Project** again.
+3. Select the same GitHub repository again.
+4. Click **Import**.
 
-5. Click **"Deploy"** and wait for build to complete
+Configure the frontend project:
 
-**⏳ Expected time:** 2-3 minutes
+```text
+Project Name: musto-frontend
+Root Directory: frontend
+Framework Preset: Vite
+Build Command: npm run build
+Output Directory: dist
+```
 
-Once deployed, **copy your backend URL** (looks like `https://musto-backend-xxxxx.vercel.app`) - you'll need it for the frontend!
+Add this environment variable:
 
-### Step 4: Configure Frontend Project
+```text
+VITE_API_BASE_URL=https://musto-backend.vercel.app
+```
 
-Back in Vercel Dashboard:
+Use your real backend URL. Do not include a trailing slash.
 
-1. Click **"Add New Project"** again
-2. Select **GitHub** and search for MUSTO
-3. When importing the same repo, Vercel will ask to create a separate project
-4. Click **"Create new team"** if needed, or continue with existing team
+Correct:
 
-Configuration:
-1. **Project Name:** `musto-frontend` (or any name)
-2. **Root Directory:** Select **`frontend`** from dropdown
-3. **Build & Development Settings:**
-   - Build command: `npm run build`
-   - Output directory: `dist`
-4. **Environment Variables:**
-   - Name: `VITE_API_BASE_URL`
-   - Value: Paste your **backend URL** from Step 3 (e.g., `https://musto-backend-xxxxx.vercel.app`)
-   - ⚠️ **IMPORTANT:** Do NOT include trailing slash!
+```text
+https://musto-backend.vercel.app
+```
 
-5. Click **"Deploy"** and wait for build
+Wrong:
 
-**⏳ Expected time:** 2-3 minutes
+```text
+https://musto-backend.vercel.app/
+```
 
-### Step 5: Verify Deployment
+Click **Deploy**.
 
-Once both deploy successfully:
+## Part 3: Verify the App
 
-1. Visit your frontend URL
-2. You should see the MUSTO application
-3. Try creating a todo or note
-4. Check the console for any errors
+After both deployments finish:
 
-✅ **If everything works, you're done!**
+1. Open your frontend Vercel URL.
+2. Open browser DevTools.
+3. Go to the Network tab.
+4. Create a todo.
+5. Create a note.
+6. Make sure API requests go to your backend URL.
 
----
+Useful backend test URLs:
 
-## Method 2: Vercel CLI
+```text
+https://your-backend-url.vercel.app/api/health
+https://your-backend-url.vercel.app/api/todos
+https://your-backend-url.vercel.app/api/notes
+```
 
-For those who prefer command line:
+## Vercel CLI Alternative
 
-### Step 1: Install Vercel CLI
+Dashboard deployment is easier for this project, but CLI also works.
+
+Install and log in:
 
 ```bash
 npm i -g vercel
-```
-
-### Step 2: Login
-
-```bash
 vercel login
 ```
 
-Follow the prompts to log in with GitHub.
-
-### Step 3: Deploy Backend
+Deploy backend:
 
 ```bash
 cd backend
 vercel --prod
 ```
 
-During prompts:
-- Set project name: `musto-backend`
-- Link to existing project?: No
-- Set production environment variables:
-  - `SUPABASE_URL=your_url`
-  - `SUPABASE_ANON_KEY=your_key`
+When prompted:
 
-**Copy the deployed URL!**
+- Create a new project
+- Use project name `musto-backend`
+- Set root as current directory
+- Add `SUPABASE_URL`
+- Add `SUPABASE_ANON_KEY`
 
-### Step 4: Deploy Frontend
+Copy the backend URL.
+
+Deploy frontend:
 
 ```bash
 cd ../frontend
 vercel --prod
 ```
 
-During prompts:
-- Set project name: `musto-frontend`
-- Link to existing project?: No
-- Set production environment variables:
-  - `VITE_API_BASE_URL=https://musto-backend-xxxxx.vercel.app`
+When prompted:
 
-### Step 5: Test
+- Create a new project
+- Use project name `musto-frontend`
+- Set root as current directory
+- Add `VITE_API_BASE_URL` with the backend URL
 
-Visit your frontend URL and test the application.
+## Common Issues
 
----
+### Vercel says `additional property projects`
 
-## Post-Deployment Verification
+Cause: `vercel.json` contains a top-level `projects` field.
 
-### ✅ Checklist
+Fix: remove `projects` from `vercel.json`. Use separate Vercel projects instead.
 
-- [ ] Frontend loads without errors
-- [ ] Can navigate between Todo and Notes pages
-- [ ] Can create a new todo
-- [ ] Can view all todos
-- [ ] Can update a todo
-- [ ] Can delete a todo
-- [ ] Can create a new note
-- [ ] Can view all notes
-- [ ] Can update a note
-- [ ] Can delete a note
-- [ ] File upload works (if applicable)
-- [ ] No console errors in browser DevTools
-- [ ] No 404 errors
+### Frontend says failed to fetch
 
-### 🔍 Testing Commands
+Cause: `VITE_API_BASE_URL` is missing or wrong.
 
-Use browser DevTools (F12) to check the Network tab:
+Fix:
 
-1. **Test health endpoint:**
-```
-GET https://your-backend.vercel.app/api/health
-```
-Should return: `{"status": "ok", "message": "MUSTO backend is running!"}`
+1. Open Vercel dashboard.
+2. Go to the frontend project.
+3. Open **Settings**.
+4. Open **Environment Variables**.
+5. Set `VITE_API_BASE_URL` to the backend URL.
+6. Redeploy the frontend.
 
-2. **Test todos endpoint:**
-```
-GET https://your-backend.vercel.app/api/todos
-```
-Should return an array of todos
+### Backend has Supabase errors
 
-3. **Test notes endpoint:**
-```
-GET https://your-backend.vercel.app/api/notes
-```
-Should return an array of notes
+Cause: Supabase environment variables are missing or wrong.
 
----
+Fix:
 
-## Common Issues & Solutions
+1. Open Vercel dashboard.
+2. Go to the backend project.
+3. Open **Settings**.
+4. Open **Environment Variables**.
+5. Check `SUPABASE_URL`.
+6. Check `SUPABASE_ANON_KEY`.
+7. Redeploy the backend.
 
-### ❌ Issue: Frontend shows "Failed to fetch todos"
+### File upload fails
 
-**Cause:** Wrong backend URL
+Cause: Supabase storage bucket is missing or not public.
 
-**Solution:**
-1. Go to Vercel Dashboard → Frontend Project → Settings → Environment Variables
-2. Update `VITE_API_BASE_URL` with correct backend URL
-3. Redeploy frontend (Deployments → Redeploy)
+Fix:
 
-### ❌ Issue: "SUPABASE_ANON_KEY is missing"
+1. Open Supabase.
+2. Go to **Storage**.
+3. Check that `note-files` exists.
+4. Check bucket permissions and policies.
 
-**Cause:** Backend environment variables not set
+### Local build works but Vercel still uses old settings
 
-**Solution:**
-1. Go to Vercel Dashboard → Backend Project → Settings → Environment Variables
-2. Verify both `SUPABASE_URL` and `SUPABASE_ANON_KEY` are set
-3. Redeploy backend
+Cause: Vercel can cache old project settings.
 
-### ❌ Issue: Build fails with TypeScript errors
+Fix:
 
-**Cause:** Code has type errors
-
-**Solution:**
-1. Run `npm run build` locally to see exact errors
-2. Fix errors
-3. Push to GitHub
-4. Vercel will auto-redeploy
-
-### ❌ Issue: Supabase connection timeout
-
-**Cause:** Wrong Supabase URL or network issue
-
-**Solution:**
-1. Verify Supabase URL in .env variables
-2. Test URL is correct: `https://xxxxx.supabase.co`
-3. Check Supabase project is not in sleep mode (paid plan)
-
-### ❌ Issue: File upload returns 500 error
-
-**Cause:** Storage bucket not configured
-
-**Solution:**
-1. Go to Supabase → Storage → Buckets
-2. Verify `note-files` bucket exists
-3. Ensure bucket is public
-4. Check RLS policies allow uploads
-
-### ❌ Issue: CORS error in browser console
-
-**Cause:** Frontend and backend origins mismatch
-
-**Solution:**
-1. Backend CORS headers are configured
-2. Verify frontend is using correct backend URL
-3. Check network request headers in DevTools
-4. If still failing, check Supabase CORS settings
-
----
-
-## 🎉 Success!
-
-Your MUSTO application is now live on Vercel!
-
-### Next Steps:
-
-1. **Share your app:** Send the frontend URL to friends
-2. **Set up custom domain:** In Vercel Dashboard → Settings → Domains
-3. **Enable analytics:** In Vercel Dashboard → Analytics
-4. **Set up monitoring:** Monitor logs in Vercel Dashboard
-
-### Useful Commands for Future Deployments:
-
-```bash
-# Redeploy after code changes
-git push origin main
-# Vercel auto-deploys from GitHub!
-
-# View logs
-vercel logs
-
-# Check deployment status
-vercel deployments
-
-# Update environment variables
-vercel env
-```
-
----
-
-## 📞 Need Help?
-
-- **Vercel Issues:** Check [Vercel Docs](https://vercel.com/docs)
-- **Supabase Issues:** Check [Supabase Docs](https://supabase.com/docs)
-- **Code Issues:** Check `DEPLOYMENT_CHECKLIST.md` in this project
-
----
-
-**Happy Deploying! 🚀**
+1. Check the project's Root Directory.
+2. Check environment variables.
+3. Redeploy from the latest GitHub commit.
+4. If the project was created with the wrong root, create a fresh Vercel project.

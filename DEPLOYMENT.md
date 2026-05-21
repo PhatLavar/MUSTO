@@ -1,54 +1,120 @@
-# MUSTO - Deployment Guide
+# MUSTO Deployment Guide
 
-## Prerequisites
-- Node.js 18+
-- Vercel CLI installed: `npm i -g vercel`
-- Supabase project with tables: `todos`, `notes`, `note_files`
+MUSTO deploys to Vercel as two projects from the same GitHub repository:
 
-## Environment Variables Setup
+- `backend`: Next.js API project
+- `frontend`: Vite React app
 
-### Backend (Vercel)
-Set these environment variables in Vercel dashboard:
-- `SUPABASE_URL` - Your Supabase project URL
-- `SUPABASE_ANON_KEY` - Your Supabase public key
+Deploy the backend first, copy its Vercel URL, then deploy the frontend with that URL in `VITE_API_BASE_URL`.
 
-### Frontend (Vercel)
-Set this environment variable in Vercel dashboard:
-- `VITE_API_BASE_URL` - Your backend API URL (e.g., `https://your-backend.vercel.app`)
+## Important Vercel Config Note
 
-## Deployment Steps
+The root `vercel.json` must not contain a `projects` property. Vercel does not support defining multiple projects inside `vercel.json`.
 
-### Option 1: Using Vercel Dashboard
-1. Push to GitHub
-2. Go to [vercel.com](https://vercel.com)
-3. Import the MUSTO repository
-4. Configure both projects (backend and frontend)
-5. Add environment variables for each project
-6. Deploy
+Valid minimal config:
 
-### Option 2: Using Vercel CLI
+```json
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json"
+}
+```
+
+Invalid config:
+
+```json
+{
+  "projects": []
+}
+```
+
+That invalid config causes:
+
+```text
+Invalid request: should NOT have additional property `projects`.
+```
+
+## Required Environment Variables
+
+Backend Vercel project:
+
+```text
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
+Frontend Vercel project:
+
+```text
+VITE_API_BASE_URL=https://your-backend-url.vercel.app
+```
+
+Do not include a trailing slash in `VITE_API_BASE_URL`.
+
+## Deploy Backend
+
+1. Push this repository to GitHub.
+2. Open [vercel.com](https://vercel.com).
+3. Click **Add New Project**.
+4. Import the GitHub repository.
+5. Set:
+   - Root Directory: `backend`
+   - Framework Preset: Next.js
+   - Build Command: `npm run build`
+6. Add backend environment variables:
+   - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY`
+7. Deploy.
+8. Copy the backend deployment URL.
+
+Check the backend:
+
+```text
+https://your-backend-url.vercel.app/api/health
+```
+
+## Deploy Frontend
+
+1. Click **Add New Project** in Vercel again.
+2. Import the same GitHub repository again.
+3. Set:
+   - Root Directory: `frontend`
+   - Framework Preset: Vite
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+4. Add frontend environment variable:
+   - `VITE_API_BASE_URL=https://your-backend-url.vercel.app`
+5. Deploy.
+
+## Local Build Commands
+
 ```bash
-# Install dependencies
-npm install
+cd backend
+npm run build
 
-# Login to Vercel
-vercel login
+cd ../frontend
+npm run build
+```
 
-# Deploy
-vercel --prod
+On Windows PowerShell, if `npm` is blocked by execution policy:
+
+```bash
+npm.cmd run build
 ```
 
 ## Troubleshooting
 
-### 404 Errors
-- Ensure `VITE_API_BASE_URL` is correctly set in frontend environment
-- Check API routes are deployed correctly in backend
-- Verify Supabase credentials are valid
+### Invalid request: should NOT have additional property `projects`
 
-### CORS Issues
-- Backend CORS headers are configured in `next.config.ts`
-- Frontend requests should include `Content-Type: application/json`
+Remove the `projects` property from `vercel.json`. Create separate Vercel projects through the Vercel dashboard instead.
 
-### Database Errors
-- Ensure tables exist in Supabase: `todos`, `notes`, `note_files`
-- Verify `SUPABASE_URL` and `SUPABASE_ANON_KEY` are correct
+### Frontend cannot fetch todos or notes
+
+Check the frontend project's `VITE_API_BASE_URL`. It must point to the deployed backend URL.
+
+### Backend cannot connect to Supabase
+
+Check the backend project's `SUPABASE_URL` and `SUPABASE_ANON_KEY` environment variables.
+
+### File upload fails
+
+Check that the Supabase `note-files` bucket exists and is public, and that your Supabase policies allow the app to use it.

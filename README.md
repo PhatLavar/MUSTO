@@ -249,7 +249,7 @@ git push origin main
    - Go to [vercel.com](https://vercel.com)
    - Click "Add New Project"
    - Select your GitHub repository
-   - Vercel will auto-detect the monorepo structure
+   - Create one project for the backend first, then create a second project for the frontend
 
 3. **Configure Backend Project**
    - Select root directory: `backend`
@@ -267,8 +267,10 @@ git push origin main
      - `VITE_API_BASE_URL`: Your deployed backend URL (e.g., `https://musto-backend.vercel.app`)
 
 5. **Deploy**
-   - Click "Deploy"
-   - Wait for both projects to build and deploy
+   - Deploy the backend first
+   - Copy the backend URL
+   - Add that URL to the frontend as `VITE_API_BASE_URL`
+   - Deploy the frontend
 
 ### Method 2: Using Vercel CLI
 

@@ -1,87 +1,98 @@
-# 🚀 MUSTO Deployment - Quick Reference
+# MUSTO Vercel Quick Start
 
-## 📋 Pre-Deployment Checklist (5 mins)
+Deploy this repo as two separate Vercel projects:
 
+1. Backend first: `backend`
+2. Frontend second: `frontend`
+
+Do not add a `projects` array to `vercel.json`. Vercel rejects that with:
+
+```text
+Invalid request: should NOT have additional property `projects`.
 ```
-✅ Code committed to GitHub
-✅ Local build works: npm run build (in both backend & frontend)
-✅ Supabase tables created: todos, notes, note_files
-✅ Supabase storage bucket created: note-files (public)
-✅ Got SUPABASE_URL from Supabase dashboard
-✅ Got SUPABASE_ANON_KEY from Supabase dashboard
-```
 
-## 🎯 Fastest Deployment Path
+## Before You Deploy
 
-### Option A: Vercel Dashboard (Recommended)
-1. Go to [vercel.com](https://vercel.com) → "Add New Project"
-2. Select GitHub repo → Click Import
-3. Set root directory: `backend` → Add env vars → Deploy
-4. Do same for frontend with root directory: `frontend`
-5. Set `VITE_API_BASE_URL` = your backend URL
-6. Done! ✅
+Make sure you have:
 
-### Option B: Vercel CLI (3 commands)
+- Code pushed to GitHub
+- A Vercel account
+- A Supabase project
+- Supabase tables: `todos`, `notes`, `note_files`
+- Supabase storage bucket: `note-files`
+
+Local build check:
+
 ```bash
-npm i -g vercel              # Install once
-vercel --prod                # Deploy backend
-vercel --prod                # Deploy frontend
+cd backend
+npm run build
+
+cd ../frontend
+npm run build
 ```
 
----
+On Windows PowerShell, if `npm` is blocked by execution policy, use:
 
-## 🔑 Environment Variables Needed
-
-### Backend (next.js on Vercel)
-```
-SUPABASE_URL=https://xxx.supabase.co
-SUPABASE_ANON_KEY=eyJxxx...
+```bash
+npm.cmd run build
 ```
 
-### Frontend (Vite + React on Vercel)
+## Step 1: Deploy Backend
+
+1. Go to [vercel.com](https://vercel.com).
+2. Click **Add New Project**.
+3. Import your GitHub repository.
+4. Configure the project:
+   - Project name: `musto-backend`
+   - Root Directory: `backend`
+   - Framework Preset: Next.js
+   - Build Command: `npm run build`
+5. Add environment variables:
+   - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY`
+6. Click **Deploy**.
+7. Copy the backend URL, for example:
+
+```text
+https://musto-backend.vercel.app
 ```
-VITE_API_BASE_URL=https://musto-backend-xxxxx.vercel.app
+
+Test it:
+
+```text
+https://your-backend-url.vercel.app/api/health
 ```
 
-**⚠️ Important:** No trailing slash on backend URL!
+## Step 2: Deploy Frontend
 
----
+1. Go back to Vercel.
+2. Click **Add New Project** again.
+3. Import the same GitHub repository again.
+4. Configure the project:
+   - Project name: `musto-frontend`
+   - Root Directory: `frontend`
+   - Framework Preset: Vite
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+5. Add environment variable:
+   - `VITE_API_BASE_URL=https://your-backend-url.vercel.app`
+6. Do not add a trailing slash to `VITE_API_BASE_URL`.
+7. Click **Deploy**.
 
-## ✅ After Deployment - Verify (2 mins)
+## Verify
 
-Open browser DevTools (F12) → Network tab
+After both deployments finish:
 
-Test these URLs:
-- `GET https://your-backend.vercel.app/api/health`
-  - Should return: `{"status":"ok",...}`
+- Open the frontend URL.
+- Create a todo.
+- Create a note.
+- Open browser DevTools and check for failed requests.
 
-- `GET https://your-backend.vercel.app/api/todos`
-  - Should return: `[]` or array of todos
+Common fixes:
 
-- Visit your frontend URL
-  - Should load without 404 errors
-  - Can create todo/note and see data update
-
----
-
-## 🆘 Quick Troubleshooting
-
-| Issue | Check |
-|-------|-------|
-| 404 errors on frontend | `VITE_API_BASE_URL` set correctly? |
-| Can't fetch todos | Backend `SUPABASE_*` env vars set? |
-| Build fails | Run `npm run build` locally to see error |
-| Still errors after deploy | Check Vercel deployment logs |
-
----
-
-## 📞 Helpful Links
-
-- [Full Guide](./VERCEL_DEPLOYMENT_GUIDE.md)
-- [Vercel Docs](https://vercel.com/docs)
-- [Supabase Docs](https://supabase.com/docs)
-- [README](./README.md)
-
----
-
-**Time to live: ~10 minutes ⚡**
+| Problem | Fix |
+| --- | --- |
+| Frontend cannot fetch data | Check `VITE_API_BASE_URL` in the frontend Vercel project |
+| Backend returns Supabase errors | Check `SUPABASE_URL` and `SUPABASE_ANON_KEY` in the backend Vercel project |
+| Vercel says `additional property projects` | Remove `projects` from `vercel.json` |
+| Local PowerShell blocks npm | Use `npm.cmd run build` |

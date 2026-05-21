@@ -50,7 +50,7 @@ All issues that could cause 404/500 errors on Vercel have been fixed:
 - ✅ CORS headers properly configured
 
 ### Configuration Added
-- ✅ `vercel.json` for monorepo deployment
+- ✅ `vercel.json` uses valid Vercel schema only
 - ✅ `.env.example` files for setup reference
 - ✅ Updated metadata & page titles
 - ✅ Enhanced `next.config.ts` with CORS
@@ -193,7 +193,7 @@ MUSTO/
 │   ├── tsconfig.json              (Fixed ✅)
 │   └── index.html                 (Title updated ✅)
 │
-└── vercel.json                    (Monorepo config ✅)
+└── vercel.json                    (Valid Vercel schema config)
 ```
 
 ---
@@ -209,7 +209,7 @@ MUSTO/
 ✅ **Configuration**
 - Environment variables documented
 - .env.example files provided
-- vercel.json for monorepo
+- vercel.json without unsupported `projects` config
 - All fixes explained
 
 ✅ **Documentation**
